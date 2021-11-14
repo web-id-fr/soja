@@ -1,0 +1,102 @@
+<?php
+
+namespace App\Services\SSO;
+
+use Jose\Component\Core\AlgorithmManager;
+use Jose\Component\Core\JWK;
+use Jose\Component\Core\JWKSet;
+use Jose\Component\Encryption\Algorithm\ContentEncryption\A256GCM;
+use Jose\Component\Encryption\Algorithm\KeyEncryption\RSAOAEP256;
+use Jose\Component\Encryption\Compression\CompressionMethodManager;
+use Jose\Component\Encryption\Compression\Deflate;
+use Jose\Component\Encryption\JWEDecrypter;
+use Jose\Component\Encryption\JWELoader;
+use Jose\Component\Encryption\Serializer\CompactSerializer;
+use Jose\Component\Encryption\Serializer\JWESerializerManager;
+use Jose\Component\NestedToken\NestedTokenLoader;
+use Jose\Component\Signature\Algorithm\RS256;
+use Jose\Component\Signature\JWSLoader;
+use Jose\Component\Signature\JWSVerifier;
+use Jose\Component\Signature\Serializer\JWSSerializerManager;
+use Jose\Component\Signature\Serializer\CompactSerializer as SignatureCompactSerializer;
+
+class NestedTokenDecryptService
+{
+    public function decryptToken(JWK $privateKey, JWK $certificate, string $token): array
+    {
+        $nestedTokenLoader = new NestedTokenLoader(
+            $this->getJWELoader(),
+            $this->getJWSLoader()
+        );
+
+        $jws = $nestedTokenLoader->load(
+            $token,
+            new JWKSet([$privateKey]),
+            new JWKSet([$certificate]),
+        );
+
+        return (array) json_decode($jws->getPayload());
+    }
+
+    private function getJWEDecrypter(): JWEDecrypter
+    {
+        $keyEncryptionAlgorithmManager = new AlgorithmManager([
+            new RSAOAEP256(),
+        ]);
+
+        $contentEncryptionAlgorithmManager = new AlgorithmManager([
+            new A256GCM(),
+        ]);
+
+        $compressionMethodManager = new CompressionMethodManager([
+            new Deflate(),
+        ]);
+
+        return new JWEDecrypter(
+            $keyEncryptionAlgorithmManager,
+            $contentEncryptionAlgorithmManager,
+            $compressionMethodManager
+        );
+    }
+
+    private function getJWESerializerManager(): JWESerializerManager
+    {
+        return new JWESerializerManager([
+            new CompactSerializer(),
+        ]);
+    }
+
+    private function getJWELoader(): JWELoader
+    {
+        return new JWELoader(
+            $this->getJWESerializerManager(),
+            $this->getJWEDecrypter(),
+            null
+        );
+    }
+
+    private function getJWSVerifier(): JWSVerifier
+    {
+        $algorithmManager = new AlgorithmManager([
+            new RS256()
+        ]);
+
+        return new JWSVerifier($algorithmManager);
+    }
+
+    private function getJWSSerializerManager(): JWSSerializerManager
+    {
+        return new JWSSerializerManager([
+            new SignatureCompactSerializer(),
+        ]);
+    }
+
+    private function getJWSLoader(): JWSLoader
+    {
+        return new JWSLoader(
+            $this->getJWSSerializerManager(),
+            $this->getJWSVerifier(),
+            null
+        );
+    }
+}

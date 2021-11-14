@@ -1,0 +1,63 @@
+<?php
+
+namespace WebId\Soja\Services;
+
+use Illuminate\Support\Facades\Storage;
+use phpseclib3\Crypt\RSA;
+use phpseclib3\File\X509;
+
+class RSAGenerator
+{
+    const STORAGE_DISK = 'public';
+
+    public function createPrivateKeyAndCertificat(string $privateKeyPath, string $certificatPath, array $dnProps = []): void
+    {
+        $privateKey = $this->createPrivateKey();
+
+        Storage::disk(self::STORAGE_DISK)
+            ->put($privateKeyPath, $privateKey->toString('PKCS8'));
+
+        Storage::disk(self::STORAGE_DISK)
+            ->put($certificatPath, $this->createCertificatFromPrivateKey($privateKey, $dnProps));
+    }
+
+    public function createPrivateKey(int $padding = RSA::SIGNATURE_RELAXED_PKCS1): RSA
+    {
+        $privateKey = RSA::createKey();
+
+        return $privateKey->withPadding($padding);
+    }
+
+    public function createCertificatFromPrivateKey(RSA $privateKey, array $dnProps = []): string
+    {
+        $x509 = new X509();
+        $x509->makeCA();
+        $subject = $this->createSubject($privateKey, $dnProps);
+        $issuer = $this->createIssuer($privateKey, $subject);
+        $signatureData = $x509->sign($issuer, $subject);
+
+        return $x509->saveX509($signatureData);
+    }
+
+    private function createSubject(RSA $privateKey, array $dnProps = []): X509
+    {
+        $subject = new X509();
+
+        foreach ($dnProps as $name => $values) {
+            $subject->setDNProp($name, $values);
+        }
+
+        $subject->setPublicKey($privateKey->getPublicKey());
+
+        return $subject;
+    }
+
+    private function createIssuer(RSA $privateKey, X509 $subject): X509
+    {
+        $issuer = new X509();
+        $issuer->setPrivateKey($privateKey);
+        $issuer->setDN($subject->getDN());
+
+        return $issuer;
+    }
+}

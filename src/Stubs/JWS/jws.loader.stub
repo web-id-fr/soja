@@ -1,0 +1,34 @@
+<?php
+
+namespace DummyNamespace;
+
+use WebId\Soja\AbstractServices\JWS\JWSLoadingAbstract;
+use Jose\Component\Checker\HeaderCheckerManager;
+use Jose\Component\Core\AlgorithmManager;
+use Jose\Component\Signature\JWSTokenSupport;
+use Jose\Component\Checker\AlgorithmChecker;
+use DummyAlgorithmNamespace;
+use DummySerializerNamespace;
+
+class DummyClass extends JWSLoadingAbstract
+{
+    function getAlgorithmManager(): AlgorithmManager
+    {
+        return new AlgorithmManager([
+            new DummyAlgorithm(),
+        ]);
+    }
+
+    function getSerializer(): CompactSerializer
+    {
+        return new DummySerializer();
+    }
+
+    function getHeaderCheckerManager(): ?HeaderCheckerManager
+    {
+        return new HeaderCheckerManager(
+            [new AlgorithmChecker(['DummyAlgorithm'])],
+            [new JWSTokenSupport()]
+        );
+    }
+}

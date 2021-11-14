@@ -3,7 +3,7 @@ name: Phpstan
 on:
   push:
     paths:
-      - 'app'
+      - 'src'
       - 'phpstan.neon'
 
 jobs:

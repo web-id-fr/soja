@@ -1,0 +1,29 @@
+<?php
+
+namespace DummyNamespace;
+
+use Jose\Component\Core\AlgorithmManager;
+use Jose\Component\Signature\Serializer\Serializer;
+use WebId\Soja\AbstractServices\JWS\JWSCreatorAbstract;
+use DummyAlgorithmNamespace;
+use DummySerializerNamespace;
+
+class DummyClass extends JWSCreatorAbstract
+{
+    function getAlgorithmManager(): AlgorithmManager
+    {
+        return new AlgorithmManager([
+            new DummyAlgorithm(),
+        ]);
+    }
+
+    function getSignatureAlgorithm(): string
+    {
+        return 'DummyAlgorithm';
+    }
+
+    function getSerializer(): Serializer
+    {
+        return new DummySerializer();
+    }
+}

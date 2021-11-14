@@ -17,7 +17,10 @@
     ],
     "require": {
         "php": "^8.0",
-        "illuminate/contracts": "^8.37"
+        "illuminate/contracts": "^8.37",
+        "phpseclib/phpseclib": "^3.0",
+        "web-token/jwt-framework": "^2.2",
+        "web-token/jwt-signature": "^2.2"
     },
     "require-dev": {
         "nunomaduro/collision": "^5.3",

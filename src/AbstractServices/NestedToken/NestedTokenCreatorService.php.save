@@ -1,0 +1,91 @@
+<?php
+
+namespace App\Services\SSO;
+
+use Jose\Component\Core\AlgorithmManager;
+use Jose\Component\Core\JWK;
+use Jose\Component\Encryption\Algorithm\ContentEncryption\A256GCM;
+use Jose\Component\Encryption\Algorithm\KeyEncryption\RSAOAEP256;
+use Jose\Component\Encryption\Compression\CompressionMethodManager;
+use Jose\Component\Encryption\Compression\Deflate;
+use Jose\Component\Encryption\JWEBuilder;
+use Jose\Component\Encryption\Serializer\CompactSerializer;
+use Jose\Component\Encryption\Serializer\JWESerializerManager;
+use Jose\Component\NestedToken\NestedTokenBuilder;
+use Jose\Component\Signature\Algorithm\RS256;
+use Jose\Component\Signature\JWSBuilder;
+use Jose\Component\Signature\Serializer\JWSSerializerManager;
+use Jose\Component\Signature\Serializer\CompactSerializer as SignatureCompactSerializer;
+
+class NestedTokenCreatorService
+{
+    public function createTokenNestedToken(JWK $privateKey, JWK $certificate, array $payload): string
+    {
+        $nestedTokenBuilder = new NestedTokenBuilder(
+            $this->getJWEBuilder(),
+            $this->getJWESerializerManager(),
+            $this->getJWSBuilder(),
+            $this->getJWSSerializerManager()
+        );
+
+        return $nestedTokenBuilder->create(
+            json_encode($payload),
+            [[
+                'key' => $privateKey,
+                'protected_header' => ['alg' => 'RS256'],
+            ]],
+            'jws_compact',
+            ['alg' => 'RSA-OAEP-256', 'enc' => 'A256GCM'],
+            [],
+            [[
+                'key' => $certificate,
+            ]],
+            'jwe_compact'
+        );
+
+    }
+
+    private function getJWEBuilder(): JWEBuilder
+    {
+        $keyEncryptionAlgorithmManager = new AlgorithmManager([
+            new RSAOAEP256(),
+        ]);
+
+        $contentEncryptionAlgorithmManager = new AlgorithmManager([
+            new A256GCM(),
+        ]);
+
+        $compressionMethodManager = new CompressionMethodManager([
+            new Deflate(),
+        ]);
+
+        return new JWEBuilder(
+            $keyEncryptionAlgorithmManager,
+            $contentEncryptionAlgorithmManager,
+            $compressionMethodManager
+        );
+    }
+
+    private function getJWESerializerManager(): JWESerializerManager
+    {
+        return new JWESerializerManager([
+            new CompactSerializer(),
+        ]);
+    }
+
+    private function getJWSBuilder(): JWSBuilder
+    {
+        $JWSAlgorithmManager = new AlgorithmManager([
+            new RS256()
+        ]);
+
+        return new JWSBuilder($JWSAlgorithmManager);
+    }
+
+    private function getJWSSerializerManager(): JWSSerializerManager
+    {
+        return new JWSSerializerManager([
+            new SignatureCompactSerializer(),
+        ]);
+    }
+}
