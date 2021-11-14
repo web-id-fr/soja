@@ -10,19 +10,19 @@ use WebId\Soja\AbstractServices\JWS\JWSCreatorAbstract;
 
 class JWSCreatorOctService extends JWSCreatorAbstract
 {
-    function getAlgorithmManager(): AlgorithmManager
+    public function getAlgorithmManager(): AlgorithmManager
     {
         return new AlgorithmManager([
             new HS256(),
         ]);
     }
 
-    function getSignatureAlgorithm(): string
+    public function getSignatureAlgorithm(): string
     {
         return 'HS256';
     }
 
-    function getSerializer(): Serializer
+    public function getSerializer(): Serializer
     {
         return new CompactSerializer();
     }

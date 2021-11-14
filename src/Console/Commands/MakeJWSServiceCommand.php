@@ -22,7 +22,7 @@ class MakeJWSServiceCommand extends Command
             'Which service do you want ?',
             [
                 self::CREATE_TOKEN_CHOICE,
-                self::LOAD_TOKEN_CHOICE
+                self::LOAD_TOKEN_CHOICE,
             ],
             self::LOAD_TOKEN_CHOICE,
             null,
@@ -36,7 +36,7 @@ class MakeJWSServiceCommand extends Command
             $this->call('make:jws:creator', [
                 'name' => 'JWSCreator' . $algorithm . 'Service',
                 'algorithmClass' => $algorithm,
-                'serializerClass' => $serializer
+                'serializerClass' => $serializer,
             ]);
         }
 
@@ -48,7 +48,7 @@ class MakeJWSServiceCommand extends Command
                 'name' => $name,
                 'algorithmClass' => $algorithm,
                 'serializerClass' => $serializer,
-                '--withoutHeaderChecker' => $useHeaderChecker
+                '--withoutHeaderChecker' => $useHeaderChecker,
             ]);
         }
 

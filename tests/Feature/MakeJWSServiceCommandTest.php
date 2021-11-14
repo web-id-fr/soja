@@ -57,7 +57,7 @@ class MakeJWSServiceCommandTest extends TestCase
         $this->artisan('make:jws')
             ->expectsQuestion('Which service do you want ?', [
                 MakeJWSServiceCommand::CREATE_TOKEN_CHOICE,
-                MakeJWSServiceCommand::LOAD_TOKEN_CHOICE
+                MakeJWSServiceCommand::LOAD_TOKEN_CHOICE,
             ])
             ->expectsQuestion('Which algorithm do you use ?', 'HS256')
             ->expectsQuestion('Which serializer do you use ?', 'JWS Compact')

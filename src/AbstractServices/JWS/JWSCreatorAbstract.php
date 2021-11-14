@@ -9,9 +9,9 @@ use Jose\Component\Signature\Serializer\Serializer;
 
 abstract class JWSCreatorAbstract
 {
-    abstract function getAlgorithmManager(): AlgorithmManager;
+    abstract public function getAlgorithmManager(): AlgorithmManager;
 
-    abstract function getSerializer(): Serializer;
+    abstract public function getSerializer(): Serializer;
 
     /**
      * @param JWK $jwk
@@ -24,7 +24,7 @@ abstract class JWSCreatorAbstract
         $signatureAlgorithm = $this->getAlgorithmManager()->list()[0];
         $builder = new JWSBuilder($this->getAlgorithmManager());
 
-        if (!$payloadEncoded = json_encode($payload)) {
+        if (! $payloadEncoded = json_encode($payload)) {
             throw new \Exception('Error while json encoding the payload.');
         }
 

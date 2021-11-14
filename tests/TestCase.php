@@ -24,9 +24,9 @@ class TestCase extends Orchestra
     {
         File::deleteDirectory(__DIR__ . '/trash');
     }
+
     protected function assertFileExistsOnTrashFolder(string $filePath): void
     {
         $this->assertFileExists(__DIR__ . '/trash/' . $filePath);
     }
-
 }

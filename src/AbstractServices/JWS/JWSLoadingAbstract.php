@@ -12,11 +12,11 @@ use Jose\Component\Signature\Serializer\Serializer;
 
 abstract class JWSLoadingAbstract
 {
-    abstract function getAlgorithmManager(): AlgorithmManager;
+    abstract public function getAlgorithmManager(): AlgorithmManager;
 
-    abstract function getSerializer(): Serializer;
+    abstract public function getSerializer(): Serializer;
 
-    abstract function getHeaderCheckerManager(): ?HeaderCheckerManager;
+    abstract public function getHeaderCheckerManager(): ?HeaderCheckerManager;
 
     /**
      * @param JWK $jwk
@@ -29,7 +29,7 @@ abstract class JWSLoadingAbstract
         $verifier = new JWSVerifier($this->getAlgorithmManager());
 
         $serializerManager = new JWSSerializerManager([
-            $this->getSerializer()
+            $this->getSerializer(),
         ]);
 
         $loader = new JWSLoader(
@@ -44,7 +44,7 @@ abstract class JWSLoadingAbstract
             return [];
         }
 
-        if (!$payload = json_decode($jws->getPayload())) {
+        if (! $payload = json_decode($jws->getPayload())) {
             throw new \Exception('Error while json decoding the payload.');
         }
 

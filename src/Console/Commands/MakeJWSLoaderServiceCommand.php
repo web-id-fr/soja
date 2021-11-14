@@ -52,7 +52,7 @@ class MakeJWSLoaderServiceCommand extends GeneratorCommand
         $stub = str_replace([
             'DummyAlgorithmNamespace',
             '{{ algorithmNamespace }}',
-            '{{algorithmNamespace}}'
+            '{{algorithmNamespace}}',
         ], data_get($algorithms, $this->argument('algorithmClass')), $stub);
 
         return $this;
@@ -65,7 +65,7 @@ class MakeJWSLoaderServiceCommand extends GeneratorCommand
         $stub = str_replace([
             'DummyAlgorithm',
             '{{ algorithm }}',
-            '{{algorithm}}'
+            '{{algorithm}}',
         ], $algorithmClass, $stub);
 
         return $this;
@@ -80,7 +80,7 @@ class MakeJWSLoaderServiceCommand extends GeneratorCommand
         $stub = str_replace([
             'DummySerializerNamespace',
             '{{ serializerNamespace }}',
-            '{{serializerNamespace}}'
+            '{{serializerNamespace}}',
         ], data_get($serializers, $this->argument('serializerClass')), $stub);
 
         return $this;
@@ -95,7 +95,7 @@ class MakeJWSLoaderServiceCommand extends GeneratorCommand
         $stub = str_replace([
             'DummySerializer',
             '{{ serializer }}',
-            '{{serializer}}'
+            '{{serializer}}',
         ], class_basename(data_get($serializers, $this->argument('serializerClass'))), $stub);
 
         return $this;

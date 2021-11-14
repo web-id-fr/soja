@@ -15,7 +15,7 @@ class SojaServiceProvider extends ServiceProvider
             $this->commands([
                 MakeJWSServiceCommand::class,
                 MakeJWSCreatorServiceCommand::class,
-                MakeJWSLoaderServiceCommand::class
+                MakeJWSLoaderServiceCommand::class,
             ]);
         }
     }
